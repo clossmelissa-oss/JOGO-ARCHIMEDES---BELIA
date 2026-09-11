@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca e Archimedes Belia - Jogo Educativo</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Special+Elite&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS: ESTILOS VINTAGE BEGE E MARROM */
+        :root {
+            --bg-color: #f4ecd8;
+            --card-bg: #fdfbf7;
+            --primary: #4a2e1b;
+            --accent: #8c5a3c;
+            --light-accent: #e6d5bd;
+            --border-color: #c0a080;
+            --text-dark: #2b1a0e;
+            --correct: #2e6b34;
+            --incorrect: #a33835;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Lora', serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            background-image: radial-gradient(#d3c1a5 1px, transparent 0);
+            background-size: 24px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background-color: var(--card-bg);
+            border: 8px double var(--primary);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            padding: 40px;
+            position: relative;
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 2px dashed var(--accent);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-family: 'Special Elite', cursive;
+            color: var(--accent);
+            font-size: 1.1rem;
+        }
+
+        .authors-box {
+            background-color: var(--light-accent);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+        }
+
+        .authors-box h3 {
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-family: 'Cinzel', serif;
+        }
+
+        .authors-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 15px;
+            list-style-type: none;
+        }
+
+        .authors-list li::before {
+            content: "• ";
+            color: var(--accent);
+        }
+
+        /* TABS DE NAVEGAÇÃO */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--primary);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--accent);
+        }
+
+        .tab-btn.active {
+            border-bottom-color: var(--accent);
+            color: var(--accent);
+            background-color: rgba(230, 213, 189, 0.4);
+            border-radius: 6px 6px 0 0;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .info-card {
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+
+        .info-card h2 {
+            font-family: 'Cinzel', serif;
+            color: var(--primary);
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        .info-card p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .highlight {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* ESTILOS DO JOGO / QUIZ */
+        .quiz-container {
+            background-color: var(--light-accent);
+            padding: 25px;
+            border-radius: 10px;
+            border: 2px solid var(--border-color);
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            padding: 14px 18px;
+            border-radius: 8px;
+            text-align: left;
+            font-family: 'Lora', serif;
+            font-size: 1rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background-color: #f0e2cd;
+            border-color: var(--accent);
+            transform: translateX(4px);
+        }
+
+        .option-btn.correct {
+            background-color: #d4edda;
+            border-color: var(--correct);
+            color: var(--correct);
+            font-weight: bold;
+        }
+
+        .option-btn.incorrect {
+            background-color: #f8d7da;
+            border-color: var(--incorrect);
+            color: var(--incorrect);
+        }
+
+        .feedback-box {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            display: none;
+        }
+
+        .feedback-box.show {
+            display: block;
+        }
+
+        .feedback-box.correct {
+            background-color: #d4edda;
+            color: var(--correct);
+            border: 1px solid var(--correct);
+        }
+
+        .feedback-box.incorrect {
+            background-color: #f8d7da;
+            color: var(--incorrect);
+            border: 1px solid var(--incorrect);
+        }
+
+        .next-btn, .restart-btn {
+            background-color: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background-color 0.2s ease;
+        }
+
+        .next-btn:hover, .restart-btn:hover {
+            background-color: var(--accent);
+        }
+
+        .results-box {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .results-box h2 {
+            font-family: 'Cinzel', serif;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .score-display {
+            font-size: 2.5rem;
+            font-family: 'Special Elite', cursive;
+            color: var(--accent);
+            margin: 20px 0;
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #7a5c43;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>BIBLIOTECA PROF. ARCHIMEDES BELIA</h1>
+            <div class="subtitle">Trabalho de Artes - 1º ANO A | Colégio Estadual Carlos Gomes</div>
+        </header>
+
+        <!-- LISTA DOS ALUNOS INTEGRANTES DO GRUPO -->
+        <div class="authors-box">
+            <h3>Alunos Integrantes:</h3>
+            <ul class="authors-list">
+                <li>Anhay Leatrice</li>
+                <li>Allana Ferrazz</li>
+                <li>Caio Câmara</li>
+                <li>Lorena Vitória</li>
+                <li>Larissa Sbardalatti</li>
+                <li>Melissa Vieira</li>
+                <li>Kauan Marques</li>
+                <li>Rayany Araújo</li>
+                <li>Luciana Nogueira</li>
+                <li>Maria Luyza Ferreira</li>
+                <li>Vitória Batista</li>
+                <li>Júlia Cambiriba</li>
+            </ul>
+        </div>
+
+        <!-- ABA DE NAVEGAÇÃO -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab('belia')">Quem Foi Belia?</button>
+            <button class="tab-btn" onclick="openTab('biblioteca')">A Biblioteca</button>
+            <button class="tab-btn" onclick="openTab('historia')">Origem do Nome</button>
+            <button class="tab-btn" onclick="openTab('jogo')">🎮 Jogo Educativo</button>
+        </div>
+
+        <!-- CONTEÚDO 1: ARCHIMEDES BELIA -->
+        <div id="belia" class="tab-content active">
+            <div class="info-card">
+                <h2>Quem foi Archimedes Belia?</h2>
+                <p>Archimedes era um professor de história que chegou em São João do Caiuá no final da década de 60 e começo de 70. Conheceu a Dona Odilhia, que era sua aluna e se tornou sua esposa. Sempre foi um professor sério e muito comprometido com o ensino.</p>
+                <p>Ele amava lecionar história e costumava dizer que <span class="highlight">"a história tem dois lados"</span> e que <span class="highlight">"para conhecer o mundo deveríamos conhecer a história"</span>. Ele também adorava ensinar a famosa linha do tempo.</p>
+                <p>Belia dominava muito sobre política e religião. Sua filha, Guaraciaba Belia, relatou que não havia nada que perguntasse a ele que ele não soubesse responder. Em sua casa mantinha uma vasta coleção de enciclopédias como Barsa e Conhecer, sendo considerado uma verdadeira "biblioteca ambulante". Apreciava músicas clássicas, óperas e boleros.</p>
+                <p>Após se aposentar, retornou para as salas de aula, mas devido ao tempo pediu readaptação e passou a trabalhar na biblioteca da escola.</p>
+            </div>
+        </div>
+
+        <!-- CONTEÚDO 2: A BIBLIOTECA -->
+        <div id="biblioteca" class="tab-content">
+            <div class="info-card">
+                <h2>A Biblioteca do Colégio Carlos Gomes</h2>
+                <p>A biblioteca da nossa escola está localizada no <span class="highlight">5º pavilhão</span>. O espaço é organizado, com estantes que armazenam livros de diferentes gêneros e níveis de ensino.</p>
+                <p>Conta com mesas e cadeiras para leitura e estudo, além da colaboração da funcionária <span class="highlight">Cida</span> para auxiliar os alunos em suas buscas e pesquisas.</p>
+                <p>Seu acervo é composto por livros didáticos, obras literárias, dicionários, enciclopédias e literatura infantojuvenil, atendendo aos alunos do Ensino Fundamental e Médio.</p>
+            </div>
+        </div>
+
+        <!-- CONTEÚDO 3: HISTÓRIA DO NOME -->
+        <div id="historia" class="tab-content">
+            <div class="info-card">
+                <h2>A Nomeação da Biblioteca (2012 / 2014)</h2>
+                <p>Em 2012, a Secretaria de Estado da Educação (SEED) desenvolveu o Sistema Estadual de Bibliotecas Escolares do Paraná. Na ocasião, foi feita uma consulta com professores e funcionários para dar um nome ao espaço.</p>
+                <p>A escolha do nome <span class="highlight">Professor Archimedes Belia</span> ocorreu após seu falecimento, como forma de homenagear seu legado, dedicação e anos de serviço à escola (onde inclusive atuou como diretor no ano de 1979).</p>
+            </div>
+        </div>
+
+        <!-- CONTEÚDO 4: JOGO EDUCATIVO (QUIZ) -->
+        <div id="jogo" class="tab-content">
+            <div class="quiz-container">
+                <div id="quiz-screen">
+                    <div class="quiz-header">
+                        <span>Desafio de Conhecimentos</span>
+                        <span id="question-tracker">Pergunta 1 de 5</span>
+                    </div>
+                    <div class="question-text" id="question-text">Carregando pergunta...</div>
+                    <div class="options-grid" id="options-grid"></div>
+                    <div id="feedback-box" class="feedback-box"></div>
+                    <button id="next-btn" class="next-btn" style="display: none;" onclick="nextQuestion()">Próxima Pergunta</button>
+                </div>
+
+                <div id="results-screen" class="results-box" style="display: none;">
+                    <h2>Parabéns por Concluir!</h2>
+                    <p>Sua pontuação final no Jogo Educativo da Biblioteca foi:</p>
+                    <div class="score-display" id="score-display">0 / 5</div>
+                    <p id="result-message"></p>
+                    <button class="restart-btn" onclick="restartQuiz()">Jogar Novamente</button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            São João do Caiuá - PR | Trabalho Escolar de Artes
+        </footer>
+    </div>
+
+    <!-- JAVASCRIPT: LÓGICA DO JOGO E DAS ABAS -->
+    <script>
+        // Função para alternar entre as abas
+        function openTab(tabId) {
+            const contents = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-btn');
+
+            contents.forEach(content => content.classList.remove('active'));
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // Banco de Dados de Perguntas do Jogo (baseado nos slides)
+        const questions = [
+            {
+                question: "Em qual local do colégio está localizada a biblioteca?",
+                options: ["1º Pavilhão", "3º Pavilhão", "5º Pavilhão", "Ao lado da quadra"],
+                answer: 2,
+                explanation: "A biblioteca do colégio está localizada no 5º pavilhão."
+            },
+            {
+                question: "Qual era a disciplina que o Professor Archimedes Belia lecionava?",
+                options: ["Geografia", "História", "Artes", "Língua Portuguesa"],
+                answer: 1,
+                explanation: "Archimedes Belia era um apaixonado professor de História."
+            },
+            {
+                question: "Qual célebre frase o Professor Belia costumava dizer sobre sua matéria?",
+                options: [
+                    "A história é escrita pelos vencedores.",
+                    "A história tem dois lados e para conhecer o mundo deveríamos conhecer a história.",
+                    "Quem não lê o passado não entende o futuro.",
+                    "A história só existe nos livros de enciclopédia."
+                ],
+                answer: 1,
+                explanation: "Ele dizia que a história tem dois lados e que devíamos conhecê-la para entender o mundo."
+            },
+            {
+                question: "Em qual ano o Professor Belia atuou como Diretor Escolar?",
+                options: ["1968", "1979", "1995", "2012"],
+                answer: 1,
+                explanation: "Archimedes Belia atuou como diretor da escola no ano de 1979."
+            },
+            {
+                question: "Quem é a funcionária citada que auxilia os alunos na biblioteca?",
+                options: ["Dona Odilhia", "Guaraciaba", "Cida", "Maria"],
+                answer: 2,
+                explanation: "A biblioteca conta com a funcionária Cida para auxiliar os estudantes."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let answered = false;
+
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            document.getElementById('results-screen').style.display = 'none';
+            document.getElementById('quiz-screen').style.display = 'block';
+            showQuestion();
+        }
+
+        function showQuestion() {
+            answered = false;
+            const q = questions[currentQuestionIndex];
+            
+            document.getElementById('question-tracker').innerText = `Pergunta ${currentQuestionIndex + 1} de ${questions.length}`;
+            document.getElementById('question-text').innerText = q.question;
+            
+            const optionsGrid = document.getElementById('options-grid');
+            optionsGrid.innerHTML = '';
+
+            const feedbackBox = document.getElementById('feedback-box');
+            feedbackBox.className = 'feedback-box';
+            feedbackBox.style.display = 'none';
+
+            document.getElementById('next-btn').style.display = 'none';
+
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => selectOption(index);
+                optionsGrid.appendChild(btn);
+            });
+        }
+
+        function selectOption(selectedIndex) {
+            if (answered) return;
+            answered = true;
+
+            const q = questions[currentQuestionIndex];
+            const buttons = document.querySelectorAll('.option-btn');
+            const feedbackBox = document.getElementById('feedback-box');
+
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                if (idx === q.answer) {
+                    btn.classList.add('correct');
+                }
+            });
+
+            if (selectedIndex === q.answer) {
+                score++;
+                feedbackBox.innerText = "✨ Correto! " + q.explanation;
+                feedbackBox.classList.add('correct', 'show');
+            } else {
+                buttons[selectedIndex].classList.add('incorrect');
+                feedbackBox.innerText = "❌ Incorreto. " + q.explanation;
+                feedbackBox.classList.add('incorrect', 'show');
+            }
+
+            document.getElementById('next-btn').style.display = 'inline-block';
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz-screen').style.display = 'none';
+            document.getElementById('results-screen').style.display = 'block';
+            
+            document.getElementById('score-display').innerText = `${score} / ${questions.length}`;
+            
+            const msg = document.getElementById('result-message');
+            if (score === questions.length) {
+                msg.innerText = "Incrível! Você demonstrou conhecimento total sobre o Professor Belia e a Biblioteca!";
+            } else if (score >= 3) {
+                msg.innerText = "Muito bem! Você aprendeu bastante sobre a história da nossa biblioteca.";
+            } else {
+                msg.innerText = "Que tal dar uma lida nas abas informativas e tentar novamente?";
+            }
+        }
+
+        function restartQuiz() {
+            startQuiz();
+        }
+
+        // Inicia o quiz ao carregar a página
+        window.onload = startQuiz;
+    </script>
+</body>
+</html>
